@@ -45,10 +45,18 @@ app.get("/insert", (req, res) => {
 
 app.get("/login", async (req, res) => {
 
-    const {email} = req.query
-    console.log(email)
+    const {email, password} = req.query
+    // console.log(email)
     try {
         const data = await CustomerModel.findOne({email: email});
+        if (!data){
+            return res.status(401).json({ error: "Invalid username or password" });
+        }
+        if (data.password === password) {
+            res.status(200).json(data);
+        } else {
+            res.status(401).json({ error: "Invalid username or password" });
+        }
         res.status(200).json(data);
     } catch (error) {
         res.status(500).json({ error: "Failed to fetch customers" });
